@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Commands.h"
-#import "UIRefreshControl+beginRefreshing.h"
 
 NS_INLINE NSString *runCommandGivingResults(NSString *command) {
     FILE *proc = popen(command.UTF8String, "r");

