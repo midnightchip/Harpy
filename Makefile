@@ -7,8 +7,8 @@ install:
 	cp -R build/Debug-iphoneos/$(TARGET).app ./Payload/
 	# strip Payload/$(TARGET).app/$(TARGET)
 	ldid -Sent.plist Payload/$(TARGET).app/$(TARGET)
-	scp -P 22 -r Payload/$(TARGET).app root@192.168.1.6:/Applications
-	ssh -p 22 root@192.168.1.6 'uicache'
+	scp -P 22 -r Payload/$(TARGET).app root@192.168.1.4:/Applications
+	ssh -p 22 root@192.168.1.4 'uicache'
 
 package:
 	xcodebuild ARCHS=arm64 clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO -sdk iphoneos -configuration Debug

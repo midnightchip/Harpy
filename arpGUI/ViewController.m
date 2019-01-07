@@ -13,6 +13,10 @@
 
 @interface ViewController ()
 @property UIRefreshControl *refreshControl;
+@property UIBarButtonItem *editButton;
+@property UIBarButtonItem *doneButton;
+@property UILabel *messageLabel;
+@property NSMutableArray *selectedIPs;
 @end
 
 //TODO to block internet, do arpspoof -i [interfaceName] -t [target] [gateway](I need to figure out if this can be anything, or must be the box).
@@ -32,6 +36,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //Enable Multiple Selection when "Editing"
+    [self setToolbarItems:@[
+                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd actionHandler:^{
+        [self kickSelectedIPs:[self.tableView indexPathsForSelectedRows]];
+        
+    }]
+                            
+                            ]];
+    
+    self.navigationController.toolbar.barTintColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
+    self.navigationController.toolbar.backgroundColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
+    self.navigationController.toolbar.translucent = NO;
+    //Edit Button
+    self.editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit actionHandler:^{
+        [self.tableView setEditing:YES animated:YES];
+        [self.navigationItem setRightBarButtonItem:self.doneButton animated:YES];
+        [self.navigationController setToolbarHidden:NO animated:YES];
+    }];
+    self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone actionHandler:^{
+        [self.tableView setEditing:NO animated:YES];
+        [self.navigationItem setRightBarButtonItem:self.editButton animated:YES];
+        [self.navigationController setToolbarHidden:YES animated:YES];
+    }];
+    self.navigationItem.rightBarButtonItem = self.editButton;
+    
+    self.tableView.allowsMultipleSelectionDuringEditing = YES;
     //Reload View
     self.refreshControl = [[UIRefreshControl alloc] init];
     self.refreshControl.backgroundColor = [UIColor blackColor];
@@ -51,12 +82,16 @@
     macAddress = [NSMutableArray new];
     manName = [NSMutableArray new];
     hostName = [NSMutableArray new];
+    self.selectedIPs = [NSMutableArray new];
     self.view.backgroundColor = [UIColor blackColor];
 }
 -(void)viewDidAppear:(BOOL)animated{
-    self.navigationItem.title = @"Getting Devices";
-    [self refreshDevices];
+    if(!tableData.count){
+        self.navigationItem.title = @"Getting Devices";
+        [self refreshDevices];
+    }
 }
+
 
 - (NSArray<NSString *> *)createArrays:(NSArray *)fullString{
     //[fullString enumerateLinesUsingBlock:^(NSString *line, BOOL *stop) {
@@ -89,21 +124,23 @@
     [self.refreshControl endRefreshing];
         if(!self->tableData.count){
             [self displayNoDevicesAlert];
+        }else{
+            [self.messageLabel removeFromSuperview];
         }
     });
 }
 
 - (void)displayNoDevicesAlert{
-    UILabel *messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
+    self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height)];
     
-    messageLabel.text = @"No devices connected. \n Please enable Wifi/Hotspot and pull to refresh.";
-    messageLabel.textColor = [UIColor whiteColor];
-    messageLabel.numberOfLines = 0;
-    messageLabel.textAlignment = NSTextAlignmentCenter;
-    messageLabel.font = [UIFont systemFontOfSize:20];
-    [messageLabel sizeToFit];
+    self.messageLabel.text = @"No devices connected. \n Please enable Wifi/Hotspot and pull to refresh.";
+    self.messageLabel.textColor = [UIColor whiteColor];
+    self.messageLabel.numberOfLines = 0;
+    self.messageLabel.textAlignment = NSTextAlignmentCenter;
+    self.messageLabel.font = [UIFont systemFontOfSize:20];
+    [self.messageLabel sizeToFit];
     
-    self.tableView.backgroundView = messageLabel;
+    self.tableView.backgroundView = self.messageLabel;
     self.tableView.backgroundColor = [UIColor blackColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.navigationItem.title =  @"arpGUI: Unavailable";
@@ -132,12 +169,17 @@
     return returnArray;
 }
 
-- (void)attackIP:(NSString *)address{
-    NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
-    NSString *output = resultsForCommand([NSString stringWithFormat:@"arpspoof -i en0 -t %@ %@", address, gateway]);
-    NSLog(@"%@", output);
-}
 
+- (void)kickSelectedIPs:(NSArray *)cellLocations{
+    [self.tableView setEditing:NO animated:YES];
+    [self.navigationItem setRightBarButtonItem:self.editButton animated:YES];
+    [self.navigationController setToolbarHidden:YES animated:YES];
+    for (NSIndexPath *indexPath in cellLocations){
+        [self.selectedIPs addObject:tableData[indexPath.row]];
+        [Commands runCommandOnIP:tableData[indexPath.row]];
+    }
+    //[MCDataProvider addTasks:self.selectedIPs];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -173,12 +215,13 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{ //[fullInfo objectAtIndex:indexPath.row]
+    if (tableView.isEditing) return;
     NSString *deviceInfo = [NSString stringWithFormat:@"%@ \n %@", [macAddress objectAtIndex:indexPath.row], [manName objectAtIndex:indexPath.row]];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:[tableData objectAtIndex:indexPath.row] message:deviceInfo preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleDefault handler:nil];
     UIAlertAction *attackAction = [UIAlertAction actionWithTitle:@"Disconnect" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
-        [self attackIP:[self->ipAdress objectAtIndex:indexPath.row]];
+        [Commands runCommandOnIP:[self->ipAdress objectAtIndex:indexPath.row]];
     }];
     [alert addAction:okAction];
     [alert addAction:attackAction];

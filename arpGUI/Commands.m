@@ -27,6 +27,42 @@
     return [[NSMutableString alloc] initWithData:[[out fileHandleForReading] readDataToEndOfFile] encoding:NSUTF8StringEncoding];
 }
 
++ (void)runCommandOnIP:(NSString *)ip{
+   NSOperationQueue *queue = [NSOperationQueue new];
+    queue.qualityOfService = NSQualityOfServiceBackground;
+    [queue addOperationWithBlock:^{
+        NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
+        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /usr/local/bin/arpspoof -i en0 -t %@ %@",ip, gateway];
+        [Commands runCommandForever:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
+    }];
+    
+}
+
++(void)stopCommandOnIP:(NSString *)ip{
+    NSArray *components = [NSArray new];
+    NSString *fullCommand = [NSString stringWithFormat:@"/usr/bin/crux /bin/ps -u root | grep %@ | awk '{print $2}'", ip];
+    NSString *pids = resultsForCommand(fullCommand);
+    components = [pids componentsSeparatedByString:@"\n"];
+    if (components.count) {
+        NSString *killPID = components[0];
+        NSString *killCommand = [NSString stringWithFormat:@"/usr/bin/crux /bin/kill %@", killPID];
+        NSString *killOutput = resultsForCommand(killCommand);
+        NSLog(@"Output %@", killOutput);
+        
+    }
+}
+
++ (void)runCommandForever:(NSString *)command withArguments:(NSArray *)args errors:(BOOL)errors {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:command];
+    [task setCurrentDirectoryPath:@"/"];
+    [task setArguments:args];
+    NSPipe *out = [NSPipe pipe];
+    [task setStandardOutput:out];
+    if(errors) [task setStandardError:out];
+    [task launch];
+}
+
 + (void)runCommand:(NSString *)command withArguments:(NSArray *)args errors:(BOOL)errors completion:(void (^)(NSString *))completion {
     
     NSTask *task = [NSTask new];

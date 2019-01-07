@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		36679C9121E2628200CEF410 /* UIBarButtonItem+blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 36679C9021E2628200CEF410 /* UIBarButtonItem+blocks.m */; };
+		36679C9D21E2703800CEF410 /* ActiveTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 36679C9C21E2703800CEF410 /* ActiveTaskViewController.m */; };
 		36C2364721DFCD1400375C16 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C2364621DFCD1400375C16 /* AppDelegate.m */; };
 		36C2364A21DFCD1400375C16 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C2364921DFCD1400375C16 /* ViewController.m */; };
 		36C2364D21DFCD1400375C16 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 36C2364B21DFCD1400375C16 /* Main.storyboard */; };
@@ -14,9 +16,14 @@
 		36C2365221DFCD1500375C16 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 36C2365021DFCD1500375C16 /* LaunchScreen.storyboard */; };
 		36C2365521DFCD1500375C16 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C2365421DFCD1500375C16 /* main.m */; };
 		36C2365E21DFD11D00375C16 /* Commands.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C2365D21DFD11D00375C16 /* Commands.m */; };
+		36E165C221E2CA48008912AB /* MCDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 36E165C121E2CA48008912AB /* MCDataProvider.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		36679C8F21E2628200CEF410 /* UIBarButtonItem+blocks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+blocks.h"; sourceTree = "<group>"; };
+		36679C9021E2628200CEF410 /* UIBarButtonItem+blocks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+blocks.m"; sourceTree = "<group>"; };
+		36679C9B21E2703800CEF410 /* ActiveTaskViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveTaskViewController.h; sourceTree = "<group>"; };
+		36679C9C21E2703800CEF410 /* ActiveTaskViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ActiveTaskViewController.m; sourceTree = "<group>"; };
 		36C2364221DFCD1400375C16 /* arpGUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = arpGUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		36C2364521DFCD1400375C16 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		36C2364621DFCD1400375C16 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -30,6 +37,8 @@
 		36C2365B21DFD0BF00375C16 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = "<group>"; };
 		36C2365C21DFD11D00375C16 /* Commands.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Commands.h; sourceTree = "<group>"; };
 		36C2365D21DFD11D00375C16 /* Commands.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Commands.m; sourceTree = "<group>"; };
+		36E165C021E2CA48008912AB /* MCDataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCDataProvider.h; sourceTree = "<group>"; };
+		36E165C121E2CA48008912AB /* MCDataProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCDataProvider.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,9 +71,15 @@
 		36C2364421DFCD1400375C16 /* arpGUI */ = {
 			isa = PBXGroup;
 			children = (
+				36E165C021E2CA48008912AB /* MCDataProvider.h */,
+				36E165C121E2CA48008912AB /* MCDataProvider.m */,
+				36679C9B21E2703800CEF410 /* ActiveTaskViewController.h */,
+				36679C9C21E2703800CEF410 /* ActiveTaskViewController.m */,
 				36C2365B21DFD0BF00375C16 /* NSTask.h */,
 				36C2364521DFCD1400375C16 /* AppDelegate.h */,
 				36C2364621DFCD1400375C16 /* AppDelegate.m */,
+				36679C8F21E2628200CEF410 /* UIBarButtonItem+blocks.h */,
+				36679C9021E2628200CEF410 /* UIBarButtonItem+blocks.m */,
 				36C2365C21DFD11D00375C16 /* Commands.h */,
 				36C2365D21DFD11D00375C16 /* Commands.m */,
 				36C2364821DFCD1400375C16 /* ViewController.h */,
@@ -149,7 +164,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				36C2364A21DFCD1400375C16 /* ViewController.m in Sources */,
+				36E165C221E2CA48008912AB /* MCDataProvider.m in Sources */,
+				36679C9D21E2703800CEF410 /* ActiveTaskViewController.m in Sources */,
 				36C2365521DFCD1500375C16 /* main.m in Sources */,
+				36679C9121E2628200CEF410 /* UIBarButtonItem+blocks.m in Sources */,
 				36C2364721DFCD1400375C16 /* AppDelegate.m in Sources */,
 				36C2365E21DFD11D00375C16 /* Commands.m in Sources */,
 			);
