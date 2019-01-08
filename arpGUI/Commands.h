@@ -35,4 +35,8 @@ NS_INLINE NSString *runCommandGivingResults(NSString *command) {
 + (void)runCommandForever:(NSString *)command withArguments:(NSArray *)args errors:(BOOL)errors;
 + (void)runCommandOnIP:(NSString *)ip;
 + (void)stopCommandOnIP:(NSString *)ip;
+
++ (void)blockIPonPF:(NSString *)ip;
++ (void)enableIPonPF:(NSString *)ip;
+
 @end

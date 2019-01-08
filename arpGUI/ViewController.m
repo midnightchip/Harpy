@@ -34,6 +34,8 @@
     NSString *output;
 }
 
+static BOOL pfBOOL = NO;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //Enable Multiple Selection when "Editing"
@@ -49,6 +51,7 @@
     self.navigationController.toolbar.barTintColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
     self.navigationController.toolbar.backgroundColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
     self.navigationController.toolbar.translucent = NO;
+    self.navigationController.toolbar.tintColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:1.0];
     //Edit Button
     self.editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit actionHandler:^{
         [self.tableView setEditing:YES animated:YES];
@@ -61,6 +64,9 @@
         [self.navigationController setToolbarHidden:YES animated:YES];
     }];
     self.navigationItem.rightBarButtonItem = self.editButton;
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:1.0];
+    
+    
     
     self.tableView.allowsMultipleSelectionDuringEditing = YES;
     //Reload View
@@ -149,7 +155,9 @@
 - (NSString *)getFullOutput{
     NSString *availableInterfaces = [Commands runCommandWithOutput:@"/bin/bash" withArguments:@[@"-c", @"/sbin/ifconfig | grep bridge100"] errors:NO];
     NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /usr/local/bin/arp-scan -interface %@ --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
-    
+    if([availableInterfaces length] > 0){
+        pfBOOL = YES;
+    }
     self.navigationItem.title =  [NSString stringWithFormat:@"arpGUI: %@", [availableInterfaces length] > 0 ? @"HotSpot" : @"Wifi" ];
     
     return resultsForCommand(command);//(@"/usr/bin/crux /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
@@ -176,7 +184,12 @@
     [self.navigationController setToolbarHidden:YES animated:YES];
     for (NSIndexPath *indexPath in cellLocations){
         [self.selectedIPs addObject:tableData[indexPath.row]];
-        [Commands runCommandOnIP:tableData[indexPath.row]];
+        if(pfBOOL){
+            [Commands blockIPonPF:tableData[indexPath.row]];
+        }else{
+            [Commands runCommandOnIP:tableData[indexPath.row]];
+        }
+        //
     }
     //[MCDataProvider addTasks:self.selectedIPs];
 }
@@ -204,7 +217,7 @@
     cell.detailTextLabel.text = [hostName objectAtIndex:indexPath.row];
     
     UIView *bgColorView = [[UIView alloc] init];
-    bgColorView.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.25]; //[UIColor redColor];
+    bgColorView.backgroundColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:0.25];//[UIColor colorWithRed:0.00 green:0.65 blue:0.58 alpha:0.25]; //[UIColor redColor];
     [cell setSelectedBackgroundView:bgColorView];
     return cell;
 }
@@ -216,12 +229,17 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{ //[fullInfo objectAtIndex:indexPath.row]
     if (tableView.isEditing) return;
+    
     NSString *deviceInfo = [NSString stringWithFormat:@"%@ \n %@", [macAddress objectAtIndex:indexPath.row], [manName objectAtIndex:indexPath.row]];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:[tableData objectAtIndex:indexPath.row] message:deviceInfo preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleDefault handler:nil];
     UIAlertAction *attackAction = [UIAlertAction actionWithTitle:@"Disconnect" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
-        [Commands runCommandOnIP:[self->ipAdress objectAtIndex:indexPath.row]];
+        if(pfBOOL){
+            [Commands blockIPonPF:[self->ipAdress objectAtIndex:indexPath.row]];
+        }else{
+            [Commands runCommandOnIP:[self->ipAdress objectAtIndex:indexPath.row]];
+        }
     }];
     [alert addAction:okAction];
     [alert addAction:attackAction];

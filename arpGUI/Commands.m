@@ -63,6 +63,19 @@
     [task launch];
 }
 
++ (void)runCommandAndExit:(NSString *)command withArguments:(NSArray *)args errors:(BOOL)errors {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:command];
+    [task setCurrentDirectoryPath:@"/"];
+    [task setArguments:args];
+    NSPipe *out = [NSPipe pipe];
+    [task setStandardOutput:out];
+    if(errors) [task setStandardError:out];
+    [task launch];
+    [task waitUntilExit];
+}
+
+
 + (void)runCommand:(NSString *)command withArguments:(NSArray *)args errors:(BOOL)errors completion:(void (^)(NSString *))completion {
     
     NSTask *task = [NSTask new];
@@ -86,6 +99,36 @@
     completion([[NSMutableString alloc] initWithData:[[task.standardOutput fileHandleForReading] availableData] encoding:NSUTF8StringEncoding]);
     
 }
+
++ (void)blockIPonPF:(NSString *)ip{
+    NSOperationQueue *queue = [NSOperationQueue new];
+    queue.qualityOfService = NSQualityOfServiceBackground;
+    [queue addOperationWithBlock:^{
+        //NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -d"] errors:NO];
+        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /sbin/pfctl -t blackIP -T add %@",ip];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        
+    }];
+    
+}
+
++ (void)enableIPonPF:(NSString *)ip{
+    NSOperationQueue *queue = [NSOperationQueue new];
+    queue.qualityOfService = NSQualityOfServiceBackground;
+    [queue addOperationWithBlock:^{
+        //NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -d"] errors:NO];
+        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /sbin/pfctl -t blackIP -T delete %@",ip];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        
+    }];
+    
+}
+
+
 
 
 

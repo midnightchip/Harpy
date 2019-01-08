@@ -17,6 +17,8 @@
 @implementation ActiveTaskViewController
 {
     NSMutableArray *tableData;
+    NSMutableArray *pfData;
+    NSMutableArray *arpData;
 }
 
 - (void)viewDidLoad {
@@ -45,6 +47,8 @@
     self.navigationController.toolbar.barTintColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
     self.navigationController.toolbar.backgroundColor = [UIColor colorWithRed:0.00 green:0.00 blue:0.00 alpha:1.0];
     self.navigationController.toolbar.translucent = NO;
+    self.navigationController.toolbar.tintColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:1.0];
+    self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:1.0];
     
     self.tableView.allowsMultipleSelectionDuringEditing = YES;
     
@@ -64,6 +68,10 @@
     
     self.tableView.backgroundColor = [UIColor blackColor];
     self.navigationItem.title = @"Blocked Devices";
+    
+    arpData = [NSMutableArray new];
+    pfData = [NSMutableArray new];
+    tableData = [NSMutableArray new];
     // Do any additional setup after loading the view.
 }
 
@@ -74,8 +82,14 @@
 
 -(void)refreshTable{
     [tableData removeAllObjects];
-    NSString *processes = resultsForCommand(@"/usr/bin/crux /bin/ps -u root | grep /usr/local/bin/arpspoof | awk '{print $9}'");
-    tableData = [self ipsFromArp:processes];
+    NSString *arpOutput = resultsForCommand(@"/usr/bin/crux /bin/ps -u root | grep /usr/local/bin/arpspoof | awk '{print $9}'");
+    
+    arpData = [self ipsFromArp:arpOutput];
+    pfData = [self ipsFromPF];
+    
+    [tableData addObjectsFromArray:arpData];
+    [tableData addObjectsFromArray:pfData];
+    
     //tableData = [[MCDataProvider runningTasks] copy];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.tableView reloadData];
@@ -85,18 +99,57 @@
 
 - (NSMutableArray *)ipsFromArp:(NSString *)string{
     NSMutableArray *components = [NSMutableArray new];
-    components = [[string componentsSeparatedByString:@"\n"]mutableCopy];
+    NSArray *breakString = [string componentsSeparatedByString:@"\n"];
+    for (NSString *string in breakString){
+        if(!([string length] == 0)){
+            [components addObject:string];
+        }
+    }
     return components;
+}
+
+- (NSMutableArray *)ipsFromPF{
+    NSString *string = resultsForCommand(@"/usr/bin/crux /sbin/pfctl -t blackIP -T show");
+    NSMutableArray *ips = [NSMutableArray new];
+    NSMutableArray<NSString *> *components = [[string componentsSeparatedByCharactersInSet:
+                           [NSCharacterSet newlineCharacterSet]]mutableCopy];
+    //NSMutableArray *removeArray = [NSMutableArray new];
+    for(NSString *string in components){
+        if(!([string length] == 0)){
+            NSString *cleaned = [string stringByTrimmingCharactersInSet:
+                                 [NSCharacterSet whitespaceCharacterSet]];
+            [ips addObject:cleaned];
+        }
+    }
+    return ips;
 }
 
 - (void)unblockSelectedIPs:(NSArray *)cellLocations{
     [self.tableView setEditing:NO animated:YES];
     [self.navigationItem setRightBarButtonItem:self.editButton animated:YES];
     [self.navigationController setToolbarHidden:YES animated:YES];
-    for (NSIndexPath *indexPath in cellLocations){
-        [Commands stopCommandOnIP:tableData[indexPath.row]];
-    }
-    [self refreshTable];
+    
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Unblock these Devices?" message:@"Would you like to remove the selected devices?" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:nil];
+    UIAlertAction *attackAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            for (NSIndexPath *indexPath in cellLocations){
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                if(cell.tag == 1){
+                    [Commands stopCommandOnIP:self->tableData[indexPath.row]];
+                }else if (cell.tag == 2){
+                    [Commands enableIPonPF:self->tableData[indexPath.row]];
+                }
+                
+            }
+            [self refreshTable];
+        });
+        
+    }];
+    [alert addAction:okAction];
+    [alert addAction:attackAction];
+    
 }
 
 
@@ -112,18 +165,26 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
         
         cell.backgroundColor = [UIColor blackColor];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.detailTextLabel.textColor = [UIColor whiteColor];
         
         UIView *bgColorView = [[UIView alloc] init];
-        bgColorView.backgroundColor = [[UIColor blueColor] colorWithAlphaComponent:0.25]; //[UIColor redColor];
+        bgColorView.backgroundColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:0.25]; //[UIColor redColor];
         [cell setSelectedBackgroundView:bgColorView];
     }
     
     cell.textLabel.text = [tableData objectAtIndex:indexPath.row];
+    if([arpData containsObject:[tableData objectAtIndex:indexPath.row]]){
+        cell.detailTextLabel.text = @"Blocked Wifi Device";
+        cell.tag = 1;
+    }else{
+        cell.detailTextLabel.text = @"Blocked Hotspot Device";
+        cell.tag = 2;
+    }
+    
     
     return cell;
 }
@@ -135,12 +196,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{ //[fullInfo objectAtIndex:indexPath.row]
     if (tableView.isEditing) return;
     
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Unblock this Device?" message:[tableData objectAtIndex:indexPath.row] preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"No" style:UIAlertActionStyleDefault handler:nil];
     UIAlertAction *attackAction = [UIAlertAction actionWithTitle:@"Yes" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * action) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [Commands stopCommandOnIP:[self->tableData objectAtIndex:indexPath.row]];
+            if(cell.tag == 1){
+                [Commands stopCommandOnIP:[self->tableData objectAtIndex:indexPath.row]];
+            }else if(cell.tag == 2){
+                [Commands enableIPonPF:[self->tableData objectAtIndex:indexPath.row]];
+            }
+            
         });
         [self refreshTable];
              
