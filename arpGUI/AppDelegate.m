@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  arpGUI
+//  Harpy
 //
 //  Created by midnightchips on 1/4/19.
 //  Copyright © 2019 midnightchips. All rights reserved.
@@ -19,6 +19,17 @@
     // Override point for customization after application launch.
     UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
     
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"Attacking networks without explicit permision from the network owner is ILLIGAL.\n Do not do it.\n I am not responsible for any thing you do with this software.\n Make good decisions." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              [alert dismissViewControllerAnimated:YES completion:nil];
+                                                          }];
+    [alert addAction:defaultAction];
+    UIWindow *alertWindow = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    alertWindow.rootViewController = [[UIViewController alloc] init];
+    alertWindow.windowLevel = UIWindowLevelAlert + 1;
+    [alertWindow makeKeyAndVisible];
+    [alertWindow.rootViewController presentViewController:alert animated:YES completion:nil]; 
     return YES;
 }
 

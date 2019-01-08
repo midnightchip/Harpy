@@ -1,6 +1,6 @@
 //
 //  ViewController.m
-//  arpGUI
+//  Harpy
 //
 //  Created by midnightchips on 1/4/19.
 //  Copyright © 2019 midnightchips. All rights reserved.
@@ -15,6 +15,7 @@
 @property UIRefreshControl *refreshControl;
 @property UIBarButtonItem *editButton;
 @property UIBarButtonItem *doneButton;
+@property UIBarButtonItem *infoButton;
 @property UILabel *messageLabel;
 @property NSMutableArray *selectedIPs;
 @end
@@ -55,15 +56,19 @@ static BOOL pfBOOL = NO;
     //Edit Button
     self.editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit actionHandler:^{
         [self.tableView setEditing:YES animated:YES];
-        [self.navigationItem setRightBarButtonItem:self.doneButton animated:YES];
+        [self.navigationItem setRightBarButtonItems:@[self.doneButton, self.infoButton] animated:YES];
         [self.navigationController setToolbarHidden:NO animated:YES];
     }];
     self.doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone actionHandler:^{
         [self.tableView setEditing:NO animated:YES];
-        [self.navigationItem setRightBarButtonItem:self.editButton animated:YES];
+        [self.navigationItem setRightBarButtonItems:@[self.editButton, self.infoButton] animated:YES];
         [self.navigationController setToolbarHidden:YES animated:YES];
     }];
-    self.navigationItem.rightBarButtonItem = self.editButton;
+    
+    self.infoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"info"] style:UIBarButtonItemStylePlain actionHandler:^{
+        [self presentCredits];
+    }];
+    self.navigationItem.rightBarButtonItems = @[self.editButton, self.infoButton];
     self.navigationController.navigationBar.tintColor = [UIColor colorWithRed:0.00 green:0.48 blue:0.52 alpha:1.0];
     
     
@@ -91,6 +96,7 @@ static BOOL pfBOOL = NO;
     self.selectedIPs = [NSMutableArray new];
     self.view.backgroundColor = [UIColor blackColor];
 }
+
 -(void)viewDidAppear:(BOOL)animated{
     if(!tableData.count){
         self.navigationItem.title = @"Getting Devices";
@@ -122,10 +128,11 @@ static BOOL pfBOOL = NO;
     self.tableView.backgroundColor = [UIColor blackColor];
     [fullInfo removeAllObjects];
     [tableData removeAllObjects];
+    
     fullInfo = [[[self getFullOutput] componentsSeparatedByString:@"\n"]mutableCopy];
     tableData = [[self createArrays:fullInfo]mutableCopy];
     hostName = [self getHostNames:ipAdress];
-    dispatch_async(dispatch_get_main_queue(), ^{
+    
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
         if(!self->tableData.count){
@@ -133,7 +140,7 @@ static BOOL pfBOOL = NO;
         }else{
             [self.messageLabel removeFromSuperview];
         }
-    });
+    
 }
 
 - (void)displayNoDevicesAlert{
@@ -149,7 +156,7 @@ static BOOL pfBOOL = NO;
     self.tableView.backgroundView = self.messageLabel;
     self.tableView.backgroundColor = [UIColor blackColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.navigationItem.title =  @"arpGUI: Unavailable";
+    self.navigationItem.title =  @"Harpy: Unavailable";
 }
 
 - (NSString *)getFullOutput{
@@ -158,7 +165,7 @@ static BOOL pfBOOL = NO;
     if([availableInterfaces length] > 0){
         pfBOOL = YES;
     }
-    self.navigationItem.title =  [NSString stringWithFormat:@"arpGUI: %@", [availableInterfaces length] > 0 ? @"HotSpot" : @"Wifi" ];
+    self.navigationItem.title =  [NSString stringWithFormat:@"Harpy: %@", [availableInterfaces length] > 0 ? @"HotSpot" : @"Wifi" ];
     
     return resultsForCommand(command);//(@"/usr/bin/crux /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
 }
@@ -247,6 +254,25 @@ static BOOL pfBOOL = NO;
     [self presentViewController:alert animated:YES completion:nil];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)presentCredits{
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Credits"
+                                                                   message:@"Created by: MidnightChips\n Special thanks to:\n CreatureSurvive and Apollo Justice.\n Source and License Available on https://github.com/midnightchip/Harpy"
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    UIAlertAction* goAction = [UIAlertAction actionWithTitle:@"Go" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              UIApplication *application = [UIApplication sharedApplication];
+                                                              NSURL *URL = [NSURL URLWithString:@"https://github.com/midnightchip/Harpy/blob/master/LICENSE"];
+                                                              [application openURL:URL options:@{} completionHandler:nil];
+                                                          }];
+    
+    [alert addAction:defaultAction];
+    [alert addAction:goAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 
