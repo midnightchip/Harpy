@@ -21,6 +21,7 @@
     NSMutableArray *arpData;
 }
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -82,7 +83,7 @@
 
 -(void)refreshTable{
     [tableData removeAllObjects];
-    NSString *arpOutput = resultsForCommand(@"/usr/bin/crux /bin/ps -u root | grep /usr/local/bin/arpspoof | awk '{print $9}'");
+    NSString *arpOutput = resultsForCommand(@"/Applications/arpGUI.app/rootIfy /bin/ps -u root | grep /usr/local/bin/arpspoof | awk '{print $9}'");
     
     arpData = [self ipsFromArp:arpOutput];
     pfData = [self ipsFromPF];
@@ -109,7 +110,7 @@
 }
 
 - (NSMutableArray *)ipsFromPF{
-    NSString *string = resultsForCommand(@"/usr/bin/crux /sbin/pfctl -t blackIP -T show");
+    NSString *string = resultsForCommand(@"/Applications/arpGUI.app/rootIfy /sbin/pfctl -t blackIP -T show");
     NSMutableArray *ips = [NSMutableArray new];
     NSMutableArray<NSString *> *components = [[string componentsSeparatedByCharactersInSet:
                            [NSCharacterSet newlineCharacterSet]]mutableCopy];

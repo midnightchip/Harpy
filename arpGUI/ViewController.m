@@ -37,6 +37,7 @@
 
 static BOOL pfBOOL = NO;
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //Enable Multiple Selection when "Editing"
@@ -161,13 +162,13 @@ static BOOL pfBOOL = NO;
 
 - (NSString *)getFullOutput{
     NSString *availableInterfaces = [Commands runCommandWithOutput:@"/bin/bash" withArguments:@[@"-c", @"/sbin/ifconfig | grep bridge100"] errors:NO];
-    NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /usr/local/bin/arp-scan -interface %@ --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
+    NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface %@ --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
     if([availableInterfaces length] > 0){
         pfBOOL = YES;
     }
     self.navigationItem.title =  [NSString stringWithFormat:@"Harpy: %@", [availableInterfaces length] > 0 ? @"HotSpot" : @"Wifi" ];
     
-    return resultsForCommand(command);//(@"/usr/bin/crux /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
+    return resultsForCommand(command);//(@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
 }
 
 - (NSMutableArray<NSString *> *)getHostNames:(NSArray *)sourceArray{

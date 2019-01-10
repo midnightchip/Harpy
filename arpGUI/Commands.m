@@ -27,12 +27,16 @@
     return [[NSMutableString alloc] initWithData:[[out fileHandleForReading] readDataToEndOfFile] encoding:NSUTF8StringEncoding];
 }
 
++ (NSString *)getError{
+    return resultsForCommand(@"/Applications/arpGUI.app/rootIfy /usr/bin/whoami");
+}
+
 + (void)runCommandOnIP:(NSString *)ip{
    NSOperationQueue *queue = [NSOperationQueue new];
     queue.qualityOfService = NSQualityOfServiceBackground;
     [queue addOperationWithBlock:^{
         NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
-        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /usr/local/bin/arpspoof -i en0 -t %@ %@",ip, gateway];
+        NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arpspoof -i en0 -t %@ %@",ip, gateway];
         [Commands runCommandForever:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
     }];
     
@@ -40,12 +44,12 @@
 
 +(void)stopCommandOnIP:(NSString *)ip{
     NSArray *components = [NSArray new];
-    NSString *fullCommand = [NSString stringWithFormat:@"/usr/bin/crux /bin/ps -u root | grep %@ | awk '{print $2}'", ip];
+    NSString *fullCommand = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /bin/ps -u root | grep %@ | awk '{print $2}'", ip];
     NSString *pids = resultsForCommand(fullCommand);
     components = [pids componentsSeparatedByString:@"\n"];
     if (components.count) {
         NSString *killPID = components[0];
-        NSString *killCommand = [NSString stringWithFormat:@"/usr/bin/crux /bin/kill %@", killPID];
+        NSString *killCommand = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /bin/kill %@", killPID];
         NSString *killOutput = resultsForCommand(killCommand);
         NSLog(@"Output %@", killOutput);
         
@@ -105,10 +109,10 @@
     queue.qualityOfService = NSQualityOfServiceBackground;
     [queue addOperationWithBlock:^{
         //NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -d"] errors:NO];
-        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /sbin/pfctl -t blackIP -T add %@",ip];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -d"] errors:NO];
+        NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /sbin/pfctl -t blackIP -T add %@",ip];
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
         
     }];
     
@@ -119,10 +123,10 @@
     queue.qualityOfService = NSQualityOfServiceBackground;
     [queue addOperationWithBlock:^{
         //NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -d"] errors:NO];
-        NSString *command = [NSString stringWithFormat:@"/usr/bin/crux /sbin/pfctl -t blackIP -T delete %@",ip];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -d"] errors:NO];
+        NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /sbin/pfctl -t blackIP -T delete %@",ip];
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/usr/bin/crux /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
         
     }];
     
