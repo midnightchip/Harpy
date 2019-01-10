@@ -62,5 +62,6 @@ fastlane/test_output
 
 iOSInjectionProject/
 
+etc/
 Deb-Layout/
 Payload/
