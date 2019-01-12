@@ -65,7 +65,11 @@
     NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrsDictionary];
     self.refreshControl.attributedTitle = attributedTitle;
     
-    self.tableView.refreshControl = self.refreshControl;
+    if (@available(iOS 10.0, *)) {
+        self.tableView.refreshControl = self.refreshControl;
+    } else {
+        [self.tableView addSubview:self.refreshControl];
+    }
     
     self.tableView.backgroundColor = [UIColor blackColor];
     self.navigationItem.title = @"Blocked Devices";
