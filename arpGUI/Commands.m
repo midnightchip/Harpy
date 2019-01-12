@@ -36,7 +36,7 @@
     queue.qualityOfService = NSQualityOfServiceBackground;
     [queue addOperationWithBlock:^{
         NSString *gateway = resultsForCommand(@"/sbin/route -n get default | grep 'gateway' | awk '{print $2}'");
-        NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arpspoof -i en0 -t %@ %@",ip, gateway];
+        NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /Applications/arpGUI.app/arpspoof -i en0 -t %@ %@",ip, gateway];
         [Commands runCommandForever:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
     }];
     
@@ -112,7 +112,7 @@
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -d"] errors:NO];
         NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /sbin/pfctl -t blackIP -T add %@",ip];
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /Applications/arpGUI.app/pf.conf"] errors:NO];
         
     }];
     
@@ -126,10 +126,25 @@
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -d"] errors:NO];
         NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /sbin/pfctl -t blackIP -T delete %@",ip];
         [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", command] errors:NO];
-        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /etc/pf.conf"] errors:NO];
+        [Commands runCommandAndExit:@"/bin/bash" withArguments:@[@"-c", @"/Applications/arpGUI.app/rootIfy /sbin/pfctl -ef /Applications/arpGUI.app/pf.conf"] errors:NO];
         
     }];
     
+}
+
++ (NSString *)getFullOutput{
+    NSString *availableInterfaces = [Commands runCommandWithOutput:@"/bin/bash" withArguments:@[@"-c", @"/sbin/ifconfig | grep bridge100"] errors:NO];
+    NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /Applications/arpGUI.app/arp-scan -interface %@ --localnet --iabfile=/Applications/arpGUI.app/ieee-iab.txt --ouifile=/Applications/arpGUI.app/ieee-oui.txt  | grep -i '[0-9A-F]\\{2\\}\\(:[0-9A-F]\\{2\\}\\)\\{5\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
+    
+    return resultsForCommand(command);//(@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
+}
+
++ (NSString *)getFullOutputNoGrep{
+    NSString *availableInterfaces = [Commands runCommandWithOutput:@"/bin/bash" withArguments:@[@"-c", @"/sbin/ifconfig | grep bridge100"] errors:NO];
+    NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /Applications/arpGUI.app/arp-scan -interface %@ --localnet --iabfile=/Applications/arpGUI.app/ieee-iab.txt --ouifile=/Applications/arpGUI.app/ieee-oui.txt | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
+    
+    
+    return resultsForCommand(command);//(@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
 }
 
 

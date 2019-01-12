@@ -65,3 +65,11 @@ iOSInjectionProject/
 etc/
 Deb-Layout/
 Payload/
+
+*.deb
+
+bins/
+
+ent\.plist
+
+pf\.conf

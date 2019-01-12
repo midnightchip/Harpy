@@ -83,7 +83,7 @@
 
 -(void)refreshTable{
     [tableData removeAllObjects];
-    NSString *arpOutput = resultsForCommand(@"/Applications/arpGUI.app/rootIfy /bin/ps -u root | grep /usr/local/bin/arpspoof | awk '{print $9}'");
+    NSString *arpOutput = resultsForCommand(@"/Applications/arpGUI.app/rootIfy /bin/ps -u root | grep /Applications/arpGUI.app/arpspoof | awk '{print $9}'");
     
     arpData = [self ipsFromArp:arpOutput];
     pfData = [self ipsFromPF];

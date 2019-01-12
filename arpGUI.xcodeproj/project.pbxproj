@@ -8,6 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		36379C2721E425F700BBD864 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 36379C2621E425F700BBD864 /* Launch Screen.storyboard */; };
+		36522E8B21E8525F006E40E5 /* arp-fingerprint in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8321E8525F006E40E5 /* arp-fingerprint */; };
+		36522E8E21E8525F006E40E5 /* get-iab in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8621E8525F006E40E5 /* get-iab */; };
+		36522E8F21E8525F006E40E5 /* get-oui in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8721E8525F006E40E5 /* get-oui */; };
+		36522E9021E8525F006E40E5 /* ieee-iab.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8821E8525F006E40E5 /* ieee-iab.txt */; };
+		36522E9121E8525F006E40E5 /* ieee-oui.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8921E8525F006E40E5 /* ieee-oui.txt */; };
+		36522E9221E8525F006E40E5 /* mac-vendor.txt in Resources */ = {isa = PBXBuildFile; fileRef = 36522E8A21E8525F006E40E5 /* mac-vendor.txt */; };
+		36522E9421E85618006E40E5 /* pf.conf in Resources */ = {isa = PBXBuildFile; fileRef = 36522E9321E85618006E40E5 /* pf.conf */; };
+		365ED4F221EA6270000F2145 /* arp-scan in Resources */ = {isa = PBXBuildFile; fileRef = 365ED4F021EA6270000F2145 /* arp-scan */; };
+		365ED4F321EA6270000F2145 /* arpspoof in Resources */ = {isa = PBXBuildFile; fileRef = 365ED4F121EA6270000F2145 /* arpspoof */; };
 		36679C9121E2628200CEF410 /* UIBarButtonItem+blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = 36679C9021E2628200CEF410 /* UIBarButtonItem+blocks.m */; };
 		36679C9D21E2703800CEF410 /* ActiveTaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 36679C9C21E2703800CEF410 /* ActiveTaskViewController.m */; };
 		36C2364721DFCD1400375C16 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 36C2364621DFCD1400375C16 /* AppDelegate.m */; };
@@ -22,6 +31,15 @@
 
 /* Begin PBXFileReference section */
 		36379C2621E425F700BBD864 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		36522E8321E8525F006E40E5 /* arp-fingerprint */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "arp-fingerprint"; sourceTree = "<group>"; };
+		36522E8621E8525F006E40E5 /* get-iab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "get-iab"; sourceTree = "<group>"; };
+		36522E8721E8525F006E40E5 /* get-oui */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "get-oui"; sourceTree = "<group>"; };
+		36522E8821E8525F006E40E5 /* ieee-iab.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ieee-iab.txt"; sourceTree = "<group>"; };
+		36522E8921E8525F006E40E5 /* ieee-oui.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "ieee-oui.txt"; sourceTree = "<group>"; };
+		36522E8A21E8525F006E40E5 /* mac-vendor.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "mac-vendor.txt"; sourceTree = "<group>"; };
+		36522E9321E85618006E40E5 /* pf.conf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pf.conf; sourceTree = SOURCE_ROOT; };
+		365ED4F021EA6270000F2145 /* arp-scan */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "arp-scan"; sourceTree = "<group>"; };
+		365ED4F121EA6270000F2145 /* arpspoof */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = arpspoof; sourceTree = "<group>"; };
 		36679C8F21E2628200CEF410 /* UIBarButtonItem+blocks.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+blocks.h"; sourceTree = "<group>"; };
 		36679C9021E2628200CEF410 /* UIBarButtonItem+blocks.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+blocks.m"; sourceTree = "<group>"; };
 		36679C9B21E2703800CEF410 /* ActiveTaskViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ActiveTaskViewController.h; sourceTree = "<group>"; };
@@ -54,6 +72,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		36522E8221E8525F006E40E5 /* bins */ = {
+			isa = PBXGroup;
+			children = (
+				365ED4F021EA6270000F2145 /* arp-scan */,
+				365ED4F121EA6270000F2145 /* arpspoof */,
+				36522E8321E8525F006E40E5 /* arp-fingerprint */,
+				36522E8621E8525F006E40E5 /* get-iab */,
+				36522E8721E8525F006E40E5 /* get-oui */,
+				36522E8821E8525F006E40E5 /* ieee-iab.txt */,
+				36522E8921E8525F006E40E5 /* ieee-oui.txt */,
+				36522E8A21E8525F006E40E5 /* mac-vendor.txt */,
+			);
+			path = bins;
+			sourceTree = SOURCE_ROOT;
+		};
 		36C2363921DFCD1400375C16 = {
 			isa = PBXGroup;
 			children = (
@@ -92,6 +125,8 @@
 				36C2364E21DFCD1500375C16 /* Assets.xcassets */,
 				36C2365321DFCD1500375C16 /* Info.plist */,
 				36C2365421DFCD1500375C16 /* main.m */,
+				36522E9321E85618006E40E5 /* pf.conf */,
+				36522E8221E8525F006E40E5 /* bins */,
 			);
 			path = arpGUI;
 			sourceTree = "<group>";
@@ -153,10 +188,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				365ED4F321EA6270000F2145 /* arpspoof in Resources */,
+				36522E9221E8525F006E40E5 /* mac-vendor.txt in Resources */,
+				365ED4F221EA6270000F2145 /* arp-scan in Resources */,
+				36522E8E21E8525F006E40E5 /* get-iab in Resources */,
 				36379C2721E425F700BBD864 /* Launch Screen.storyboard in Resources */,
+				36522E8F21E8525F006E40E5 /* get-oui in Resources */,
+				36522E9121E8525F006E40E5 /* ieee-oui.txt in Resources */,
+				36522E9421E85618006E40E5 /* pf.conf in Resources */,
 				36C2364F21DFCD1500375C16 /* Assets.xcassets in Resources */,
+				36522E9021E8525F006E40E5 /* ieee-iab.txt in Resources */,
 				36C2364D21DFCD1400375C16 /* Main.storyboard in Resources */,
 				36E31E0A21E5A26F00D197A1 /* rootIfy in Resources */,
+				36522E8B21E8525F006E40E5 /* arp-fingerprint in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,7 +352,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = arpGUI/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -327,7 +371,7 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = arpGUI/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

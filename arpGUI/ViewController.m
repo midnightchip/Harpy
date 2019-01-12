@@ -88,7 +88,11 @@ static BOOL pfBOOL = NO;
     NSAttributedString *attributedTitle = [[NSAttributedString alloc] initWithString:title attributes:attrsDictionary];
     self.refreshControl.attributedTitle = attributedTitle;
     
-    self.tableView.refreshControl = self.refreshControl;
+    if (@available(iOS 10.0, *)) {
+        self.tableView.refreshControl = self.refreshControl;
+    } else {
+        [self.tableView addSubview:self.refreshControl];
+    }
     //Device Arrays
     ipAdress = [NSMutableArray new];
     macAddress = [NSMutableArray new];
@@ -162,7 +166,7 @@ static BOOL pfBOOL = NO;
 
 - (NSString *)getFullOutput{
     NSString *availableInterfaces = [Commands runCommandWithOutput:@"/bin/bash" withArguments:@[@"-c", @"/sbin/ifconfig | grep bridge100"] errors:NO];
-    NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface %@ --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
+    NSString *command = [NSString stringWithFormat:@"/Applications/arpGUI.app/rootIfy /Applications/arpGUI.app/arp-scan -interface %@ --localnet --iabfile=/Applications/arpGUI.app/ieee-iab.txt --ouifile=/Applications/arpGUI.app/ieee-oui.txt  | grep -i '[0-9A-F]\\{2\\}\\(:[0-9A-F]\\{2\\}\\)\\{5\\}' | sort -V", [availableInterfaces length] > 0 ? @"bridge100" : @"en0"];
     if([availableInterfaces length] > 0){
         pfBOOL = YES;
     }
@@ -170,6 +174,8 @@ static BOOL pfBOOL = NO;
     
     return resultsForCommand(command);//(@"/Applications/arpGUI.app/rootIfy /usr/local/bin/arp-scan -interface en0 --localnet | grep  '[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}\\.[0-9]\\{1,3\\}' | sort -V");
 }
+
+
 
 - (NSMutableArray<NSString *> *)getHostNames:(NSArray *)sourceArray{
     NSMutableArray *returnArray = [NSMutableArray new];
@@ -268,7 +274,11 @@ static BOOL pfBOOL = NO;
                                                           handler:^(UIAlertAction * action) {
                                                               UIApplication *application = [UIApplication sharedApplication];
                                                               NSURL *URL = [NSURL URLWithString:@"https://github.com/midnightchip/Harpy/blob/master/LICENSE"];
-                                                              [application openURL:URL options:@{} completionHandler:nil];
+                                                              if (@available(iOS 10.0, *)) {
+                                                                  [application openURL:URL options:@{} completionHandler:nil];
+                                                              } else {
+                                                                  [application openURL:URL];
+                                                              }
                                                           }];
     
     [alert addAction:defaultAction];

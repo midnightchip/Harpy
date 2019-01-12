@@ -39,5 +39,7 @@ NS_INLINE NSString *runCommandGivingResults(NSString *command) {
 + (void)blockIPonPF:(NSString *)ip;
 + (void)enableIPonPF:(NSString *)ip;
 + (NSString *)getError;
++ (NSString *)getFullOutput;
++ (NSString *)getFullOutputNoGrep;
 
 @end

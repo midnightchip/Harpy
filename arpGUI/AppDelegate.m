@@ -19,7 +19,7 @@
     // Override point for customization after application launch.
     UIApplication.sharedApplication.statusBarStyle = UIStatusBarStyleLightContent;
     
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"Attacking networks without explicit permision from the network owner is ILLIGAL.\n Do not do it.\n I am not responsible for any thing you do with this software.\n Make good decisions." preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Warning" message:@"Attacking networks without explicit permision from the network owner is ILLEGAL.\n Do not do it.\n I am not responsible for any thing you do with this software.\n Make good decisions." preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction * action) {
                                                               [alert dismissViewControllerAnimated:YES completion:nil];
