@@ -1,0 +1,39 @@
+PODS:
+  - MMLanScan (3.0.0)
+  - RegExCategories (1.0)
+  - SDWebImage (5.0.6):
+    - SDWebImage/Core (= 5.0.6)
+  - SDWebImage/Core (5.0.6)
+  - VTAcknowledgementsViewController (1.5.1)
+
+DEPENDENCIES:
+  - MMLanScan
+  - RegExCategories (~> 1.0)
+  - SDWebImage (~> 5.0)
+  - VTAcknowledgementsViewController (from `https://github.com/midnightchip/VTAcknowledgementsViewController.git`, branch `harpy`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - MMLanScan
+    - RegExCategories
+    - SDWebImage
+
+EXTERNAL SOURCES:
+  VTAcknowledgementsViewController:
+    :branch: harpy
+    :git: https://github.com/midnightchip/VTAcknowledgementsViewController.git
+
+CHECKOUT OPTIONS:
+  VTAcknowledgementsViewController:
+    :commit: 1324734dd8e75e1250613b7299c9d1c178a12d6a
+    :git: https://github.com/midnightchip/VTAcknowledgementsViewController.git
+
+SPEC CHECKSUMS:
+  MMLanScan: 86a0f77edbf163be30c1f58321469c7c8ce4c50e
+  RegExCategories: e68befacacd5bda853c88f70ec745cb2d0cfb89c
+  SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+  VTAcknowledgementsViewController: 3bb742da852a5161dc9f4b017e52f926a41ef5d3
+
+PODFILE CHECKSUM: fdd1ba2fb012452af17ce46e57b2d3f99137b612
+
+COCOAPODS: 1.6.0.beta.2

@@ -1,0 +1,1 @@
+../../../MMLanScan/MMLanScan/Misc/LANProperties.h
