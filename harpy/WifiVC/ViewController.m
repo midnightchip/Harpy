@@ -17,6 +17,46 @@
 
 #import "MCCommands.h"
 
+static inline NSString *udid(void);
+static inline BOOL isValidPurchase(void);
+
+static inline BOOL isValidPurchase() {
+    __block BOOL isValid = FALSE;
+    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+    NSString *post = [NSString stringWithFormat:@"https://chariz.io/api/drm/check?udid=%@&model=%@&identifier=com.midnightchips.harpy&token=%@", udid(), (__bridge NSString *)(MGCopyAnswer((__bridge CFStringRef)@"ProductType")), TOKEN];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setHTTPMethod:@"POST"];
+    [request setURL:[NSURL URLWithString:post]];
+    [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if (data && !error) {
+            NSDictionary *response = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+            if([response objectForKey:@"status"]) {
+                NSString *responseValue = [response valueForKey:@"status"];
+                if ([responseValue isEqualToString:@"completed"]) {
+                    isValid = TRUE;
+                }
+            }
+        }
+        dispatch_semaphore_signal(sema);
+    }] resume];
+    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    return isValid;
+}
+
+static inline NSString *udid() {
+    static NSString *udid = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        CFStringRef udidCF = (CFStringRef)MGCopyAnswer(kMGUniqueDeviceID);
+        udid = (__bridge NSString *)udidCF;
+        if (udid == NULL) {
+            // send a fake UDID in case this is a simulator
+            udid = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+        }
+    });
+    return udid;
+}
+
 @interface WifiVC () {
     NSMutableArray *tableData;
 }
@@ -28,11 +68,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //[MCCommands checkRX];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSLog(@"HELLO %@", documentsDirectory);
-    self.defaults = [NSUserDefaults standardUserDefaults];
     
+    self.defaults = [NSUserDefaults standardUserDefaults];
     tableData = [NSMutableArray new];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -41,7 +78,9 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"deviceCell" bundle:nil] forCellReuseIdentifier:@"deviceCell"];
     
     self.lanScanner = [[MMLANScanner alloc] initWithDelegate:self];
-    
+    if (![self.defaults boolForKey:@"checked"]) {
+        [self checkLicense];
+    }
     if (![self.defaults boolForKey:@"agreed"]) {
         [self agreeToTerms];
     } else {
@@ -49,6 +88,40 @@
     }
     
     
+}
+
+- (void)checkLicense {
+    if (isValidPurchase()) {
+        [self.defaults setBool:TRUE forKey:@"checked"];
+        [self.defaults synchronize];
+    }
+    if(![self.defaults boolForKey:@"checked"]) {
+        UIAlertController * alert=[UIAlertController
+                                   
+                                   alertControllerWithTitle:@"Warning" message:@"This copy of Harpy is pirated.\nPirates commonly modify packages that can take advantage of you and your device. Please consider buying a copy rather than pirating."preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction* ok = [UIAlertAction
+                             actionWithTitle:@"Ok I'll buy it."
+                             style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction * action)
+                             {
+                                 if (@available(iOS 10.0, *)) {
+                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://repo.chariz.io/package/com.midnightchips.harpy/"] options:@{} completionHandler:nil];
+                                 } else {
+                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://repo.chariz.io/package/com.midnightchips.harpy/"]];
+                                 }
+                             }];
+        
+        UIAlertAction* cancel = [UIAlertAction
+                                 actionWithTitle:@"Nah, I like people stealing my data."
+                                 style:UIAlertActionStyleCancel
+                                 handler:^(UIAlertAction * action)
+                                 {
+                                 }];
+        [alert addAction:cancel];
+        [alert addAction:ok];
+        [self presentViewController:alert animated:YES completion:nil];
+    }
 }
 
 - (void)agreeToTerms {

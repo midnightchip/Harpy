@@ -27,17 +27,25 @@ enum HarpyCreditRows {
     HarpyiTollmous,
     HarpyCreature
 };
-
 @implementation SettingsTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.tableView registerNib:[UINib nibWithNibName:@"CreditCell" bundle:nil] forCellReuseIdentifier:@"CreditCell"];
     [self.navigationController.navigationBar setTranslucent:FALSE];
+    BOOL auth = [[NSUserDefaults standardUserDefaults] boolForKey:@"checked"];
     [self.navigationController.navigationBar setBarTintColor:[HarpyGlobal darkModeEnabled] ? tableColor : whiteTable];
-    NSString *pack = [NSString stringWithFormat:@"v%@", PACKAGE_VERSION];
+    NSString *pack = nil;
+    if (auth) {
+        pack = [NSString stringWithFormat:@"v%@", PACKAGE_VERSION];
+    } else {
+        pack = @"ARG MATEY";
+    }
     NSString *titleString = [NSString stringWithFormat:@"Harpy\n\t\t%@",pack];
     //self.versionLabel.text = titleString;
+    if (!auth) {
+        [self.bannerImage setImage:[UIImage imageNamed:@"Pirate"]];
+    }
     NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:titleString];
     [text addAttributes:@{NSFontAttributeName : [UIFont fontWithName:@".SFUIDisplay-Medium" size:36],
                           NSForegroundColorAttributeName:[UIColor whiteColor]}

@@ -459,6 +459,7 @@
 					"PACKAGE_VERSION='@\"Internal\"'",
 					"$(inherited)",
 					"COCOAPODS=1",
+					"TOKEN='@\"Unknown\"'",
 				);
 				INFOPLIST_FILE = harpy/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -470,6 +471,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.midnightchips.harpy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TOKEN = "'@\"Unknown\"'";
 			};
 			name = Debug;
 		};
@@ -484,6 +486,7 @@
 					"PACKAGE_VERSION='@\"Internal\"'",
 					"$(inherited)",
 					"COCOAPODS=1",
+					"TOKEN='@\"Unknown\"'",
 				);
 				INFOPLIST_FILE = harpy/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -495,6 +498,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.midnightchips.harpy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TOKEN = "'@\"Unknown\"'";
 			};
 			name = Release;
 		};

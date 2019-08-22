@@ -27,6 +27,7 @@ Build/
 packages/
 .theos/
 layout/
+Makefile
 
 
 ## Obj-C/Swift specific

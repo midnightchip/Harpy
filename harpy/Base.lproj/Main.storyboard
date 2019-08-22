@@ -154,9 +154,9 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="181"/>
                                 </imageView>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Harpy v" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Val-Na-rnk">
-                                    <rect key="frame" x="8" y="74" width="176" height="99"/>
+                                    <rect key="frame" x="8" y="74" width="275" height="99"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="176" id="u7b-ir-Evt"/>
+                                        <constraint firstAttribute="width" constant="275" id="u7b-ir-Evt"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -165,7 +165,7 @@
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <constraints>
-                                <constraint firstAttribute="trailing" secondItem="Val-Na-rnk" secondAttribute="trailing" constant="191" id="3yQ-gZ-Zl7"/>
+                                <constraint firstAttribute="trailing" secondItem="Val-Na-rnk" secondAttribute="trailing" constant="92" id="3yQ-gZ-Zl7"/>
                                 <constraint firstItem="4t3-NV-jdE" firstAttribute="top" secondItem="vwN-XJ-yot" secondAttribute="top" id="7ZG-sG-CAp"/>
                                 <constraint firstItem="Val-Na-rnk" firstAttribute="top" secondItem="vwN-XJ-yot" secondAttribute="top" constant="74" id="DiH-49-6sd"/>
                                 <constraint firstAttribute="bottom" secondItem="4t3-NV-jdE" secondAttribute="bottom" id="Jyi-dI-Lfd"/>

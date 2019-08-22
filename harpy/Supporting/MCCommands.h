@@ -11,6 +11,8 @@
 #import <spawn.h>
 #import <signal.h>
 
+
+
 NS_INLINE NSString *runCommandGivingResults(NSString *command) {
     FILE *proc = popen(command.UTF8String, "r");
     

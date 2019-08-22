@@ -7,8 +7,9 @@
 //
 
 #import "MCCommands.h"
+#import "MobileGestalt.h"
 #import "RegExCategories.h"
-//#import <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
 
 //Requires Network Commands dependency
 
@@ -30,6 +31,7 @@
     return stringRead;
     
 }
+
 
 + (void)asRoot:(NSTask *)task arguments:(NSArray *)arguments {
     NSString *launchPath = task.launchPath;
